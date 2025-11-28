@@ -652,6 +652,7 @@ let isLinked = true;
 let currentDuration = 10;
 let customWidth = 1024;
 let customHeight = 1024;
+let lastGeneratedImageUrl = '';
 
 // Image Mode Switching
 function switchImageMode(mode) {
@@ -881,8 +882,11 @@ async function generateImage() {
             if (resultData.success && status === 'done' && resultData.imageUrls && resultData.imageUrls.length > 0) {
                 const imgUrl = resultData.imageUrls[0];
                 previewCanvas.innerHTML = `
-                    <img src="${imgUrl}" alt="Generated Image" style="max-width: 100%; max-height: 100%; border-radius: 8px; box-shadow: 0 4px 20px rgba(0,0,0,0.1); animation: fadeIn 0.5s ease;">
+                    <img src="${imgUrl}" alt="Generated Image" style="max-width: 100%; max-height: 100%; border-radius: 8px; box-shadow: 0 4px 20px rgba(0,0,0,0.1); animation: fadeIn 0.5s ease; cursor: zoom-in;" onclick="openImageInNewTab('${imgUrl}')">
                 `;
+
+                lastGeneratedImageUrl = imgUrl;
+                addToGallery(imgUrl);
 
                 btn.innerHTML = originalText;
                 btn.disabled = false;
@@ -905,6 +909,11 @@ async function generateImage() {
         btn.disabled = false;
         showNotification('图片生成失败，请稍后重试');
     }
+}
+
+function openImageInNewTab(url) {
+    if (!url) return;
+    window.open(url, '_blank');
 }
 
 function generateVideo() {
@@ -951,12 +960,36 @@ function generateVideo() {
 }
 
 function downloadImage() {
-    const img = document.querySelector('#imagePreviewCanvas img');
-    if (img) {
-        showNotification('开始下载...');
-    } else {
+    if (!lastGeneratedImageUrl) {
         showNotification('没有可下载的图片');
+        return;
     }
+
+    try {
+        const link = document.createElement('a');
+        link.href = lastGeneratedImageUrl;
+        link.download = 'ai-image.png';
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        showNotification('开始下载...');
+    } catch (e) {
+        console.error('下载图片出错:', e);
+        showNotification('下载失败，请右键图片另存为');
+    }
+}
+
+function addToGallery(imageUrl) {
+    const galleryGrid = document.querySelector('.gallery-grid');
+    if (!galleryGrid || !imageUrl) return;
+
+    const item = document.createElement('div');
+    item.className = 'gallery-item';
+    item.style.backgroundImage = `url(${imageUrl})`;
+    item.style.backgroundSize = 'cover';
+    item.style.backgroundPosition = 'center center';
+
+    galleryGrid.prepend(item);
 }
 
 function downloadVideo() {
