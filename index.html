@@ -1,0 +1,491 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>智绘管家 - AI创作平台</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="credits.css">
+</head>
+
+<body>
+    <!-- 导航栏 -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="logo">智绘管家</div>
+            <ul class="nav-menu">
+                <li><a href="#home" class="nav-link active">首页</a></li>
+                <li><a href="#image" class="nav-link">图片创作</a></li>
+                <li><a href="#video" class="nav-link">视频创作</a></li>
+                <li><a href="#gallery" class="nav-link">作品集</a></li>
+            </ul>
+            <div class="nav-actions">
+                <div class="credits-badge" onclick="CreditsSystem.openModal()">
+                    <svg class="credits-icon" viewBox="0 0 24 24" fill="currentColor">
+                        <path
+                            d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z" />
+                    </svg>
+                    <span class="credits-value">1,280</span>
+                    <svg class="credits-plus" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                        <circle cx="12" cy="12" r="10" />
+                        <line x1="12" y1="8" x2="12" y2="16" />
+                        <line x1="8" y1="12" x2="16" y2="12" />
+                    </svg>
+                </div>
+                <button class="btn-secondary" onclick="window.location.href='login.html'">登录</button>
+                <button class="btn-primary" id="btnMoreFeatures">更多功能</button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- 主页英雄区 -->
+    <section id="home" class="hero-section active">
+        <div class="hero-content">
+            <h1 class="hero-title">
+                <span class="hero-title-main">超越想象</span>
+                <span class="hero-title-sub">用AI重新定义创作</span>
+            </h1>
+            <p class="hero-description">
+                专业级图片与视频创作平台，让每个创意都能完美呈现
+            </p>
+            <div class="hero-actions">
+                <button class="btn-large btn-primary" onclick="scrollToCreation()">立即体验</button>
+                <button class="btn-large btn-outline">了解更多</button>
+            </div>
+        </div>
+        <div class="hero-visual">
+            <div class="visual-grid">
+                <div class="visual-card" style="animation-delay: 0s;">
+                    <div class="card-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                            <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z" />
+                        </svg>
+                    </div>
+                    <h4 class="card-title">极速生成</h4>
+                    <p class="card-desc">秒级响应，快速生成高质量作品</p>
+                </div>
+                <div class="visual-card" style="animation-delay: 0.2s;">
+                    <div class="card-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                            <rect x="3" y="3" width="18" height="18" rx="2" />
+                            <path d="M9 3v18M3 9h18M3 15h18M15 3v18" />
+                        </svg>
+                    </div>
+                    <h4 class="card-title">多样风格</h4>
+                    <p class="card-desc">支持多种艺术风格和创作类型</p>
+                </div>
+                <div class="visual-card" style="animation-delay: 0.4s;">
+                    <div class="card-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                            <path d="M12 2L2 7l10 5 10-5-10-5z" />
+                            <path d="M2 17l10 5 10-5M2 12l10 5 10-5" />
+                        </svg>
+                    </div>
+                    <h4 class="card-title">专业品质</h4>
+                    <p class="card-desc">高清输出，满足专业需求</p>
+                </div>
+                <div class="visual-card" style="animation-delay: 0.6s;">
+                    <div class="card-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+                        </svg>
+                    </div>
+                    <h4 class="card-title">安全可靠</h4>
+                    <p class="card-desc">数据加密，保护您的创意</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 功能选择区 -->
+    <section class="features-section">
+        <div class="container">
+            <div class="section-header">
+                <h2 class="section-title">强大的创作工具</h2>
+                <p class="section-subtitle">选择您需要的创作方式</p>
+            </div>
+
+            <div class="feature-grid">
+                <!-- 图片创作 -->
+                <div class="feature-card" onclick="showSection('image')">
+                    <div class="feature-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                            <rect x="3" y="3" width="18" height="18" rx="2" ry="2" />
+                            <circle cx="8.5" cy="8.5" r="1.5" />
+                            <polyline points="21 15 16 10 5 21" />
+                        </svg>
+                    </div>
+                    <h3 class="feature-title">图片创作</h3>
+                    <p class="feature-desc">通过文字描述或图片参考，生成高质量的艺术作品</p>
+                    <div class="feature-tags">
+                        <span class="tag">文生图</span>
+                        <span class="tag">图生图</span>
+                    </div>
+                </div>
+
+                <!-- 视频创作 -->
+                <div class="feature-card" onclick="showSection('video')">
+                    <div class="feature-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                            <polygon points="23 7 16 12 23 17 23 7" />
+                            <rect x="1" y="5" width="15" height="14" rx="2" ry="2" />
+                        </svg>
+                    </div>
+                    <h3 class="feature-title">视频创作</h3>
+                    <p class="feature-desc">专业的视频生成工具，打造令人惊叹的动态内容</p>
+                    <div class="feature-tags">
+                        <span class="tag">产品视频</span>
+                        <span class="tag">超级播客</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 图片创作区域 -->
+    <section id="image" class="creation-section">
+        <div class="creation-bg-effect"></div>
+        <div class="container">
+            <div class="section-nav">
+                <button class="back-btn" onclick="backToHome()">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M19 12H5M12 19l-7-7 7-7" />
+                    </svg>
+                    <span>返回</span>
+                </button>
+            </div>
+
+            <div class="creation-header">
+                <div class="header-content">
+                    <div class="header-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                            <rect x="3" y="3" width="18" height="18" rx="2" ry="2" />
+                            <circle cx="8.5" cy="8.5" r="1.5" />
+                            <polyline points="21 15 16 10 5 21" />
+                        </svg>
+                    </div>
+                    <div class="header-text">
+                        <h2 class="header-title">图片创作工作台</h2>
+                        <p class="header-subtitle">专业级图片内容生成平台</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="mode-switcher-container">
+                <button class="mode-switch-btn active" data-mode="text2img" onclick="switchImageMode('text2img')">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" />
+                        <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" />
+                    </svg>
+                    文生图
+                </button>
+                <button class="mode-switch-btn" data-mode="img2img" onclick="switchImageMode('img2img')">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <rect x="3" y="3" width="18" height="18" rx="2" ry="2" />
+                        <circle cx="8.5" cy="8.5" r="1.5" />
+                        <polyline points="21 15 16 10 5 21" />
+                    </svg>
+                    图生图
+                </button>
+            </div>
+
+            <div class="creation-layout-new">
+                <!-- 左侧控制面板 -->
+                <div class="control-panel">
+                    <!-- 提示词区域 -->
+                    <div class="panel-section">
+                        <div class="section-header-row">
+                            <label class="input-label">创意描述</label>
+                            <button class="btn-optimize" onclick="optimizePrompt()">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path
+                                        d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83" />
+                                </svg>
+                                提示词优化
+                            </button>
+                        </div>
+                        <textarea class="text-input" id="imagePrompt" placeholder="描述您想要生成的画面..." rows="4"></textarea>
+                    </div>
+
+                    <!-- 图生图上传区域 (默认隐藏) -->
+                    <div class="panel-section" id="refImageSection" style="display: none;">
+                        <label class="input-label">参考图片</label>
+                        <div class="upload-area compact" onclick="document.getElementById('refImgUpload').click()">
+                            <input type="file" id="refImgUpload" accept="image/*" style="display: none;">
+                            <div class="upload-content">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                                    <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M17 8l-5-5-5 5M12 3v12" />
+                                </svg>
+                                <span>上传参考图</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 模型选择 & 参考方式 (图生图时两列) -->
+                    <div class="panel-section">
+                        <div class="model-reference-row" id="modelReferenceRow">
+                            <div class="model-col">
+                                <label class="input-label">模型选择</label>
+                                <div class="custom-select-wrapper">
+                                    <select class="select-input" id="imageModel">
+                                        <option value="zd4.0">ZD 4.0</option>
+                                        <option value="zd3.1">ZD 3.1</option>
+                                        <option value="zd3.0">ZD 3.0</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="reference-col" id="referenceCol" style="display: none;">
+                                <label class="input-label">参考方式</label>
+                                <div class="custom-select-wrapper">
+                                    <select class="select-input" id="referenceMode">
+                                        <option value="smart">智能参考</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 比例选择 -->
+                    <div class="panel-section">
+                        <label class="input-label">图片比例</label>
+                        <div class="ratio-grid">
+                            <button class="ratio-item" onclick="setRatio('21:9')">21:9</button>
+                            <button class="ratio-item" onclick="setRatio('16:9')">16:9</button>
+                            <button class="ratio-item" onclick="setRatio('3:2')">3:2</button>
+                            <button class="ratio-item" onclick="setRatio('4:3')">4:3</button>
+                            <button class="ratio-item active" onclick="setRatio('1:1')">1:1</button>
+                            <button class="ratio-item" onclick="setRatio('3:4')">3:4</button>
+                            <button class="ratio-item" onclick="setRatio('2:3')">2:3</button>
+                            <button class="ratio-item" onclick="setRatio('9:16')">9:16</button>
+                            <button class="ratio-item wide" onclick="setRatio('custom')">自定义</button>
+                        </div>
+
+                        <!-- 自定义尺寸输入 -->
+                        <div class="custom-dimensions" id="customDimensions">
+                            <div class="dimension-inputs">
+                                <div class="dim-input-group">
+                                    <span>宽</span>
+                                    <input type="number" id="customWidth" value="1024"
+                                        oninput="updateDimensions('width')">
+                                </div>
+                                <button class="link-btn active" id="linkBtn" onclick="toggleLink()" title="锁定比例">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71" />
+                                        <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71" />
+                                    </svg>
+                                </button>
+                                <div class="dim-input-group">
+                                    <span>高</span>
+                                    <input type="number" id="customHeight" value="1024"
+                                        oninput="updateDimensions('height')">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 生成按钮 -->
+                    <button class="btn-generate-large" onclick="generateImage()">
+                        <span class="btn-text">立即生成</span>
+                        <div class="btn-shine"></div>
+                    </button>
+                </div>
+
+                <!-- 右侧预览区域 -->
+                <div class="preview-panel">
+                    <div class="preview-canvas" id="imagePreviewCanvas">
+                        <div class="empty-state">
+                            <div class="empty-icon">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1">
+                                    <rect x="3" y="3" width="18" height="18" rx="2" ry="2" />
+                                    <circle cx="8.5" cy="8.5" r="1.5" />
+                                    <polyline points="21 15 16 10 5 21" />
+                                </svg>
+                            </div>
+                            <p>配置参数后点击生成</p>
+                        </div>
+                    </div>
+                    <div class="preview-toolbar">
+                        <button class="tool-btn" onclick="downloadImage()">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M7 10l5 5 5-5M12 15V3" />
+                            </svg>
+                            下载
+                        </button>
+                        <button class="tool-btn" onclick="regenerateImage()">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <polyline points="23 4 23 10 17 10" />
+                                <polyline points="1 20 1 14 7 14" />
+                                <path d="M3.51 9a9 9 0 0114.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0020.49 15" />
+                            </svg>
+                            重新生成
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 视频创作区域 -->
+    <section id="video" class="creation-section">
+        <div class="creation-bg-effect"></div>
+        <div class="container">
+            <div class="section-nav">
+                <button class="back-btn" onclick="backToHome()">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M19 12H5M12 19l-7-7 7-7" />
+                    </svg>
+                    <span>返回</span>
+                </button>
+            </div>
+
+            <div class="creation-header">
+                <div class="header-content">
+                    <div class="header-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                            <polygon points="23 7 16 12 23 17 23 7" />
+                            <rect x="1" y="5" width="15" height="14" rx="2" ry="2" />
+                        </svg>
+                    </div>
+                    <div class="header-text">
+                        <h2 class="header-title">视频创作工作台</h2>
+                        <p class="header-subtitle">专业级视频内容生成平台</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="creation-layout-new">
+                <!-- 左侧控制面板 -->
+                <div class="control-panel">
+                    <!-- 提示词区域 -->
+                    <div class="panel-section">
+                        <div class="section-header-row">
+                            <label class="input-label">视频描述</label>
+                            <button class="btn-optimize" onclick="optimizePrompt()">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path
+                                        d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83" />
+                                </svg>
+                                提示词优化
+                            </button>
+                        </div>
+                        <textarea class="text-input" id="videoPrompt" placeholder="描述您想要生成的视频内容..." rows="5"></textarea>
+                    </div>
+
+                    <!-- 模型选择 -->
+                    <div class="panel-section">
+                        <label class="input-label">模型选择</label>
+                        <div class="custom-select-wrapper">
+                            <select class="select-input" id="videoModel">
+                                <option value="zds2.0">ZD S2.0</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- 时长选择 -->
+                    <div class="panel-section">
+                        <label class="input-label">视频时长</label>
+                        <div class="duration-selector">
+                            <button class="duration-btn active" onclick="setDuration(10)">10秒</button>
+                            <button class="duration-btn" onclick="setDuration(15)">15秒</button>
+                        </div>
+                    </div>
+
+                    <!-- 生成按钮 -->
+                    <button class="btn-generate-large" onclick="generateVideo()">
+                        <span class="btn-text">生成视频</span>
+                        <div class="btn-shine"></div>
+                    </button>
+                </div>
+
+                <!-- 右侧预览区域 -->
+                <div class="preview-panel">
+                    <div class="preview-canvas video-canvas" id="videoPreviewCanvas">
+                        <div class="empty-state">
+                            <div class="empty-icon">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1">
+                                    <polygon points="23 7 16 12 23 17 23 7" />
+                                    <rect x="1" y="5" width="15" height="14" rx="2" ry="2" />
+                                </svg>
+                            </div>
+                            <p>配置参数后点击生成</p>
+                        </div>
+                    </div>
+                    <div class="preview-toolbar">
+                        <button class="tool-btn" onclick="downloadVideo()">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M7 10l5 5 5-5M12 15V3" />
+                            </svg>
+                            下载
+                        </button>
+                        <button class="tool-btn" onclick="regenerateVideo()">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <polyline points="23 4 23 10 17 10" />
+                                <polyline points="1 20 1 14 7 14" />
+                                <path d="M3.51 9a9 9 0 0114.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0020.49 15" />
+                            </svg>
+                            重新生成
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 作品集区域 -->
+    <section id="gallery" class="gallery-section">
+        <div class="container">
+            <div class="section-header">
+                <h2 class="section-title">精选作品</h2>
+                <p class="section-subtitle">探索无限创意可能</p>
+            </div>
+
+            <div class="gallery-filters-creative">
+                <div class="filter-toggle-wrapper">
+                    <div class="filter-toggle-bg"></div>
+                    <button class="filter-toggle-btn active" data-filter="image">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <rect x="3" y="3" width="18" height="18" rx="2" ry="2" />
+                            <circle cx="8.5" cy="8.5" r="1.5" />
+                            <polyline points="21 15 16 10 5 21" />
+                        </svg>
+                        <span>图片</span>
+                    </button>
+                    <button class="filter-toggle-btn" data-filter="video">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <polygon points="23 7 16 12 23 17 23 7" />
+                            <rect x="1" y="5" width="15" height="14" rx="2" ry="2" />
+                        </svg>
+                        <span>视频</span>
+                    </button>
+                </div>
+            </div>
+
+            <div class="gallery-grid">
+                <div class="gallery-item"></div>
+                <div class="gallery-item"></div>
+                <div class="gallery-item"></div>
+                <div class="gallery-item"></div>
+                <div class="gallery-item"></div>
+                <div class="gallery-item"></div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 底部装饰栏 -->
+    <footer class="footer">
+        <div class="footer-glow"></div>
+        <div class="footer-container">
+            <div class="footer-content">
+                <span class="footer-logo">智绘管家</span>
+                <div class="footer-divider"></div>
+                <p class="footer-text">© 2025 All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="script.js"></script>
+    <script src="credits.js"></script>
+</body>
+
+</html>

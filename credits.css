@@ -1,0 +1,496 @@
+/* ========================================
+   积分系统独立样式表
+   ======================================== */
+
+/* 导航栏积分显示 */
+.credits-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 14px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border-radius: 20px;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 0 2px 8px rgba(102, 126, 234, 0.3);
+    position: relative;
+    overflow: hidden;
+}
+
+.credits-badge::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+    transition: left 0.5s;
+}
+
+.credits-badge:hover::before {
+    left: 100%;
+}
+
+.credits-badge:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+}
+
+.credits-badge:active {
+    transform: translateY(0);
+}
+
+.credits-icon {
+    width: 18px;
+    height: 18px;
+    color: #ffd700;
+    filter: drop-shadow(0 0 2px rgba(255, 215, 0, 0.5));
+}
+
+.credits-value {
+    color: white;
+    font-size: 14px;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+}
+
+.credits-plus {
+    width: 14px;
+    height: 14px;
+    color: white;
+    opacity: 0.9;
+}
+
+/* 积分模态框 */
+.credits-modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 10000;
+    animation: creditsModalFadeIn 0.3s ease-out;
+}
+
+.credits-modal.show {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+@keyframes creditsModalFadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+.credits-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.7);
+    backdrop-filter: blur(4px);
+}
+
+.credits-dialog {
+    position: relative;
+    width: 90%;
+    max-width: 800px;
+    max-height: 85vh;
+    background: white;
+    border-radius: 20px;
+    overflow: hidden;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+    animation: creditsDialogSlide 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+@keyframes creditsDialogSlide {
+    from {
+        opacity: 0;
+        transform: translateY(-40px) scale(0.9);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+.credits-dialog-header {
+    padding: 32px 32px 24px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    position: relative;
+    overflow: hidden;
+}
+
+.credits-dialog-header::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    right: -50%;
+    width: 200%;
+    height: 200%;
+    background: radial-gradient(circle, rgba(255, 255, 255, 0.1) 0%, transparent 70%);
+    animation: creditsHeaderGlow 3s ease-in-out infinite;
+}
+
+@keyframes creditsHeaderGlow {
+    0%, 100% {
+        transform: translate(0, 0);
+    }
+    50% {
+        transform: translate(-20px, -20px);
+    }
+}
+
+.credits-close-btn {
+    position: absolute;
+    top: 16px;
+    right: 16px;
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(255, 255, 255, 0.2);
+    border: none;
+    border-radius: 50%;
+    cursor: pointer;
+    transition: all 0.3s;
+    z-index: 1;
+}
+
+.credits-close-btn:hover {
+    background: rgba(255, 255, 255, 0.3);
+    transform: rotate(90deg);
+}
+
+.credits-close-btn svg {
+    width: 16px;
+    height: 16px;
+    color: white;
+}
+
+.credits-header-content {
+    position: relative;
+    z-index: 1;
+}
+
+.credits-header-title {
+    font-size: 28px;
+    font-weight: 800;
+    margin: 0 0 8px;
+}
+
+.credits-header-balance {
+    font-size: 16px;
+    opacity: 0.95;
+    margin: 0;
+}
+
+.credits-current {
+    font-size: 20px;
+    font-weight: 700;
+    color: #ffd700;
+    text-shadow: 0 0 10px rgba(255, 215, 0, 0.3);
+}
+
+.credits-dialog-body {
+    padding: 32px;
+    max-height: calc(85vh - 200px);
+    overflow-y: auto;
+}
+
+/* 积分套餐 */
+.credits-packages-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+    gap: 16px;
+    margin-bottom: 32px;
+}
+
+.credits-package {
+    position: relative;
+    padding: 24px 16px;
+    background: #f8f9fa;
+    border: 2px solid #e9ecef;
+    border-radius: 16px;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.credits-package:hover {
+    border-color: #667eea;
+    transform: translateY(-4px);
+    box-shadow: 0 8px 20px rgba(102, 126, 234, 0.15);
+}
+
+.credits-package.selected {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border-color: #667eea;
+    color: white;
+    transform: translateY(-4px);
+    box-shadow: 0 8px 20px rgba(102, 126, 234, 0.3);
+}
+
+.credits-package-badge {
+    position: absolute;
+    top: -10px;
+    left: 50%;
+    transform: translateX(-50%);
+    padding: 4px 12px;
+    background: #ff6b6b;
+    color: white;
+    font-size: 11px;
+    font-weight: 700;
+    border-radius: 10px;
+    white-space: nowrap;
+}
+
+.credits-package-amount {
+    font-size: 36px;
+    font-weight: 800;
+    margin: 8px 0 4px;
+    line-height: 1;
+}
+
+.credits-package.selected .credits-package-amount {
+    color: #ffd700;
+}
+
+.credits-package-label {
+    font-size: 13px;
+    opacity: 0.7;
+    margin-bottom: 12px;
+}
+
+.credits-package-price {
+    font-size: 24px;
+    font-weight: 700;
+    margin-bottom: 4px;
+}
+
+.credits-package-unit {
+    font-size: 11px;
+    opacity: 0.6;
+}
+
+/* 支付方式 */
+.credits-payment-section {
+    margin-top: 24px;
+}
+
+.credits-payment-title {
+    font-size: 16px;
+    font-weight: 700;
+    color: #333;
+    margin-bottom: 16px;
+}
+
+.credits-payment-options {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+}
+
+.credits-payment-option {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 16px;
+    background: #f8f9fa;
+    border: 2px solid #e9ecef;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+.credits-payment-option:hover {
+    border-color: #667eea;
+}
+
+.credits-payment-option.selected {
+    background: rgba(102, 126, 234, 0.1);
+    border-color: #667eea;
+}
+
+.credits-payment-icon {
+    width: 32px;
+    height: 32px;
+}
+
+.credits-payment-name {
+    flex: 1;
+    font-size: 14px;
+    font-weight: 600;
+    color: #333;
+}
+
+.credits-payment-check {
+    width: 20px;
+    height: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #667eea;
+    border-radius: 50%;
+    opacity: 0;
+    transform: scale(0);
+    transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.credits-payment-option.selected .credits-payment-check {
+    opacity: 1;
+    transform: scale(1);
+}
+
+.credits-payment-check svg {
+    width: 12px;
+    height: 12px;
+    color: white;
+}
+
+/* 购买按钮 */
+.credits-dialog-footer {
+    padding: 24px 32px;
+    background: #f8f9fa;
+    border-top: 1px solid #e9ecef;
+}
+
+.credits-buy-btn {
+    width: 100%;
+    padding: 16px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border: none;
+    border-radius: 12px;
+    font-size: 16px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.3s;
+    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+    position: relative;
+    overflow: hidden;
+}
+
+.credits-buy-btn::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 0;
+    height: 0;
+    background: rgba(255, 255, 255, 0.3);
+    border-radius: 50%;
+    transform: translate(-50%, -50%);
+    transition: width 0.6s, height 0.6s;
+}
+
+.credits-buy-btn:hover::before {
+    width: 300px;
+    height: 300px;
+}
+
+.credits-buy-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(102, 126, 234, 0.4);
+}
+
+.credits-buy-btn:active {
+    transform: translateY(0);
+}
+
+.credits-buy-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    transform: none !important;
+}
+
+.credits-buy-btn-content {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+}
+
+.credits-buy-loading {
+    width: 16px;
+    height: 16px;
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    border-top-color: white;
+    border-radius: 50%;
+    animation: creditsSpinning 0.6s linear infinite;
+}
+
+@keyframes creditsSpinning {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+/* 响应式 */
+@media (max-width: 768px) {
+    .credits-dialog {
+        width: 95%;
+        max-height: 90vh;
+    }
+    
+    .credits-dialog-header {
+        padding: 24px 24px 20px;
+    }
+    
+    .credits-header-title {
+        font-size: 24px;
+    }
+    
+    .credits-dialog-body {
+        padding: 24px;
+    }
+    
+    .credits-packages-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 12px;
+    }
+    
+    .credits-package {
+        padding: 20px 12px;
+    }
+    
+    .credits-package-amount {
+        font-size: 28px;
+    }
+    
+    .credits-payment-options {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* 滚动条样式 */
+.credits-dialog-body::-webkit-scrollbar {
+    width: 6px;
+}
+
+.credits-dialog-body::-webkit-scrollbar-track {
+    background: #f1f1f1;
+}
+
+.credits-dialog-body::-webkit-scrollbar-thumb {
+    background: #667eea;
+    border-radius: 3px;
+}
+
+.credits-dialog-body::-webkit-scrollbar-thumb:hover {
+    background: #764ba2;
+}
+
+

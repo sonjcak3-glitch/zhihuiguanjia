@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>登录 - 智绘管家</title>
+    <link rel="stylesheet" href="login.css">
+</head>
+<body>
+    <!-- 背景装饰 -->
+    <div class="background-decoration">
+        <div class="blob blob-1"></div>
+        <div class="blob blob-2"></div>
+        <div class="blob blob-3"></div>
+    </div>
+
+    <!-- 返回首页按钮 -->
+    <a href="index.html" class="back-home">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="19" y1="12" x2="5" y2="12"/>
+            <polyline points="12 19 5 12 12 5"/>
+        </svg>
+        <span>返回首页</span>
+    </a>
+
+    <!-- 登录容器 -->
+    <div class="login-container">
+        <!-- Logo区域 -->
+        <div class="login-header">
+            <h1 class="login-logo">智绘管家</h1>
+            <p class="login-subtitle">欢迎回来，继续你的创作之旅</p>
+        </div>
+
+        <!-- 登录方式切换 -->
+        <div class="login-tabs">
+            <button class="tab-button active" data-tab="password">密码登录</button>
+            <button class="tab-button" data-tab="code">验证码登录</button>
+        </div>
+
+        <!-- 密码登录表单 -->
+        <form class="login-form" id="passwordForm">
+            <div class="form-group">
+                <label for="phone" class="form-label">手机号</label>
+                <div class="input-wrapper">
+                    <svg class="input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/>
+                    </svg>
+                    <input 
+                        type="tel" 
+                        id="phone" 
+                        class="form-input" 
+                        placeholder="输入你的手机号"
+                        maxlength="11"
+                        required
+                    >
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="password" class="form-label">密码</label>
+                <div class="input-wrapper">
+                    <svg class="input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
+                        <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+                    </svg>
+                    <input 
+                        type="password" 
+                        id="password" 
+                        class="form-input" 
+                        placeholder="输入你的密码"
+                        required
+                    >
+                    <button type="button" class="toggle-password" id="togglePassword">
+                        <svg class="eye-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                            <circle cx="12" cy="12" r="3"/>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+
+            <div class="form-options">
+                <label class="checkbox-label">
+                    <input type="checkbox" class="checkbox-input">
+                    <span class="checkbox-text">记住我</span>
+                </label>
+                <a href="#" class="forgot-link">忘记密码？</a>
+            </div>
+
+            <button type="submit" class="login-button">
+                登录
+                <svg class="button-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <line x1="5" y1="12" x2="19" y2="12"/>
+                    <polyline points="12 5 19 12 12 19"/>
+                </svg>
+            </button>
+        </form>
+
+        <!-- 验证码登录表单 -->
+        <form class="login-form" id="codeForm" style="display: none;">
+            <div class="form-group">
+                <label for="phoneCode" class="form-label">手机号</label>
+                <div class="input-wrapper">
+                    <svg class="input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/>
+                    </svg>
+                    <input 
+                        type="tel" 
+                        id="phoneCode" 
+                        class="form-input" 
+                        placeholder="输入你的手机号"
+                        maxlength="11"
+                        required
+                    >
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="verifyCode" class="form-label">验证码</label>
+                <div class="input-wrapper code-wrapper">
+                    <svg class="input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
+                        <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+                    </svg>
+                    <input 
+                        type="text" 
+                        id="verifyCode" 
+                        class="form-input" 
+                        placeholder="输入验证码"
+                        maxlength="6"
+                        required
+                    >
+                    <button type="button" class="send-code-btn" id="sendCodeBtn">
+                        获取验证码
+                    </button>
+                </div>
+            </div>
+
+            <button type="submit" class="login-button" style="margin-top: 32px;">
+                登录
+                <svg class="button-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <line x1="5" y1="12" x2="19" y2="12"/>
+                    <polyline points="12 5 19 12 12 19"/>
+                </svg>
+            </button>
+        </form>
+
+        <!-- 注册链接 -->
+        <div class="login-footer">
+            <p class="footer-text">
+                还没有账号？
+                <a href="#" class="register-link">立即注册</a>
+            </p>
+        </div>
+    </div>
+
+    <script src="login.js"></script>
+</body>
+</html>
+
