@@ -653,6 +653,8 @@ let currentDuration = 10;
 let customWidth = 1024;
 let customHeight = 1024;
 let lastGeneratedImageUrl = '';
+let imageGenerations = [];
+let isImageGenerating = false;
 
 // Image Mode Switching
 function switchImageMode(mode) {
@@ -823,17 +825,6 @@ async function generateImage() {
     btn.innerHTML = '<span class="btn-text">正在生成...</span><div class="btn-shine"></div>';
     btn.disabled = true;
 
-    const previewCanvas = document.getElementById('imagePreviewCanvas');
-    previewCanvas.innerHTML = `
-        <div class="loading-spinner" style="text-align: center;">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 40px; height: 40px; animation: spin 1s linear infinite; color: var(--primary-color);">
-                <circle cx="12" cy="12" r="10" opacity="0.25"/>
-                <path d="M12 2a10 10 0 0 1 10 10" opacity="0.75"/>
-            </svg>
-            <p style="margin-top: 12px; color: var(--text-secondary);">AI正在绘制中...</p>
-        </div>
-    `;
-
     if (!document.getElementById('spinStyle')) {
         const style = document.createElement('style');
         style.id = 'spinStyle';
@@ -841,79 +832,325 @@ async function generateImage() {
         document.head.appendChild(style);
     }
 
+    isImageGenerating = true;
+    renderImageGenerations();
+
     try {
-        const submitResponse = await fetch('/api/jimeng-submit', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
-                prompt: prompt,
-                width: customWidth,
-                height: customHeight
-            })
-        });
+        const width = customWidth;
+        const height = customHeight;
+        const IMAGE_COUNT = 4;
+        const tasks = [];
 
-        const submitData = await submitResponse.json();
-
-        if (!submitResponse.ok || !submitData || !submitData.success || !submitData.taskId) {
-            throw new Error(submitData && submitData.message ? submitData.message : '生成任务提交失败，请稍后重试');
+        for (let i = 0; i < IMAGE_COUNT; i++) {
+            tasks.push(requestSingleImage(prompt, width, height));
         }
 
-        const taskId = submitData.taskId;
-        const maxAttempts = 60; // 最多轮询约2分钟
-        const interval = 2000;
+        const results = await Promise.allSettled(tasks);
+        const imageUrls = results
+            .filter(r => r.status === 'fulfilled' && r.value)
+            .map(r => r.value);
 
-        for (let attempt = 0; attempt < maxAttempts; attempt++) {
-            const resultResponse = await fetch(`/api/jimeng-result?taskId=${encodeURIComponent(taskId)}`);
-            const resultData = await resultResponse.json();
-
-            if (!resultResponse.ok) {
-                throw new Error(resultData && resultData.message ? resultData.message : '查询任务失败');
-            }
-
-            const status = resultData.status;
-
-            if (status === 'in_queue' || status === 'generating') {
-                await new Promise(resolve => setTimeout(resolve, interval));
-                continue;
-            }
-
-            if (resultData.success && status === 'done' && resultData.imageUrls && resultData.imageUrls.length > 0) {
-                const imgUrl = resultData.imageUrls[0];
-                previewCanvas.innerHTML = `
-                    <img src="${imgUrl}" alt="Generated Image" style="max-width: 100%; max-height: 100%; border-radius: 8px; box-shadow: 0 4px 20px rgba(0,0,0,0.1); animation: fadeIn 0.5s ease; cursor: zoom-in;" onclick="openImageInNewTab('${imgUrl}')">
-                `;
-
-                lastGeneratedImageUrl = imgUrl;
-                addToGallery(imgUrl);
-
-                btn.innerHTML = originalText;
-                btn.disabled = false;
-                showNotification('图片生成成功！');
-                return;
-            }
-
-            throw new Error(resultData && resultData.message ? resultData.message : '生成失败，请稍后重试');
+        if (!imageUrls.length) {
+            throw new Error('生成失败，请稍后重试');
         }
 
-        throw new Error('生成超时，请稍后重试');
+        const modelSelect = document.getElementById('imageModel');
+        const modelValue = modelSelect ? modelSelect.value : 'zd3.1';
+
+        const generation = {
+            id: Date.now() + '_' + Math.floor(Math.random() * 1000),
+            prompt,
+            width,
+            height,
+            model: modelValue,
+            createdAt: new Date().toISOString(),
+            images: imageUrls.map(url => ({ url }))
+        };
+
+        imageGenerations.push(generation);
+        lastGeneratedImageUrl = imageUrls[0];
+        showNotification('图片生成成功！');
     } catch (error) {
         console.error('生成图片出错:', error);
-        previewCanvas.innerHTML = `
-            <div style="text-align: center; padding: 24px; color: var(--text-secondary);">
-                <p>生成失败：${error && error.message ? error.message : '请稍后重试'}</p>
-            </div>
-        `;
+        showNotification(error && error.message ? `图片生成失败：${error.message}` : '图片生成失败，请稍后重试');
+    } finally {
+        isImageGenerating = false;
         btn.innerHTML = originalText;
         btn.disabled = false;
-        showNotification('图片生成失败，请稍后重试');
+        renderImageGenerations();
     }
+}
+
+async function requestSingleImage(prompt, width, height) {
+    const submitResponse = await fetch('/api/jimeng-submit', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+            prompt,
+            width,
+            height
+        })
+    });
+
+    const submitData = await submitResponse.json();
+
+    if (!submitResponse.ok || !submitData || !submitData.success || !submitData.taskId) {
+        throw new Error(submitData && submitData.message ? submitData.message : '生成任务提交失败，请稍后重试');
+    }
+
+    const taskId = submitData.taskId;
+    const maxAttempts = 60; // 最多轮询约2分钟
+    const interval = 2000;
+
+    for (let attempt = 0; attempt < maxAttempts; attempt++) {
+        const resultResponse = await fetch(`/api/jimeng-result?taskId=${encodeURIComponent(taskId)}`);
+        const resultData = await resultResponse.json();
+
+        if (!resultResponse.ok) {
+            throw new Error(resultData && resultData.message ? resultData.message : '查询任务失败');
+        }
+
+        const status = resultData.status;
+
+        if (status === 'in_queue' || status === 'generating') {
+            await new Promise(resolve => setTimeout(resolve, interval));
+            continue;
+        }
+
+        if (resultData.success && status === 'done' && resultData.imageUrls && resultData.imageUrls.length > 0) {
+            return resultData.imageUrls[0];
+        }
+
+        throw new Error(resultData && resultData.message ? resultData.message : '生成失败，请稍后重试');
+    }
+
+    throw new Error('生成超时，请稍后重试');
 }
 
 function openImageInNewTab(url) {
     if (!url) return;
-    window.open(url, '_blank');
+    openImageModal(url);
+}
+
+function renderImageGenerations() {
+    const previewCanvas = document.getElementById('imagePreviewCanvas');
+    if (!previewCanvas) return;
+
+    if (!imageGenerations.length && !isImageGenerating) {
+        previewCanvas.innerHTML = `
+            <div class="empty-state">
+                <div class="empty-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1">
+                        <rect x="3" y="3" width="18" height="18" rx="2" ry="2" />
+                        <circle cx="8.5" cy="8.5" r="1.5" />
+                        <polyline points="21 15 16 10 5 21" />
+                    </svg>
+                </div>
+                <p>配置参数后点击生成</p>
+            </div>
+        `;
+        return;
+    }
+
+    let html = '<div class="image-preview-stream">';
+
+    if (isImageGenerating) {
+        html += `
+            <div class="preview-message preview-message-loading">
+                <div class="preview-message-meta">
+                    <span>AI 正在绘制中...</span>
+                </div>
+            </div>
+        `;
+    }
+
+    imageGenerations.forEach(gen => {
+        const date = new Date(gen.createdAt);
+        const timeLabel = isNaN(date.getTime())
+            ? ''
+            : date.toLocaleTimeString('zh-CN', { hour12: false, hour: '2-digit', minute: '2-digit' });
+
+        html += `
+            <div class="preview-message">
+                <div class="preview-message-header">
+                    <div class="preview-message-meta">
+                        <span class="preview-message-time">${timeLabel}</span>
+                        <span class="preview-message-model">${(gen.model || '').toUpperCase()}</span>
+                    </div>
+                    <button class="preview-message-pin-btn" onclick="addGenerationToGallery('${gen.id}')">
+                        加入优质作品集
+                    </button>
+                </div>
+                <div class="preview-images-grid">
+        `;
+
+        gen.images.forEach((img, index) => {
+            const url = img.url;
+            html += `
+                <div class="preview-image-card">
+                    <img src="${url}" alt="生成结果" class="preview-image" onclick="openImageModal('${url}')">
+                    <div class="preview-image-actions">
+                        <button class="preview-image-action-btn" onclick="openPromptModalById('${gen.id}')">查看提示词</button>
+                        <button class="preview-image-action-btn" onclick="downloadImageByIndex('${gen.id}', ${index})">下载</button>
+                        <button class="preview-image-action-btn" onclick="sendToImg2ImgByIndex('${gen.id}', ${index})">发到图生图</button>
+                        <button class="preview-image-action-btn" onclick="sendToVideoRefByIndex('${gen.id}', ${index})">发到图生视频</button>
+                    </div>
+                </div>
+            `;
+        });
+
+        html += `
+                </div>
+            </div>`;
+    });
+
+    html += '</div>';
+    previewCanvas.innerHTML = html;
+}
+
+function openImageModal(url) {
+    if (!url) return;
+    const overlay = document.createElement('div');
+    overlay.className = 'modal-overlay';
+
+    const dialog = document.createElement('div');
+    dialog.className = 'modal-image-dialog';
+
+    const closeBtn = document.createElement('button');
+    closeBtn.className = 'modal-close-btn';
+    closeBtn.type = 'button';
+    closeBtn.innerHTML = '<span>×</span>';
+    closeBtn.addEventListener('click', () => {
+        if (overlay.parentNode) overlay.parentNode.removeChild(overlay);
+    });
+
+    const img = document.createElement('img');
+    img.src = url;
+    img.alt = '预览';
+
+    dialog.appendChild(closeBtn);
+    dialog.appendChild(img);
+    overlay.appendChild(dialog);
+
+    overlay.addEventListener('click', (e) => {
+        if (e.target === overlay && overlay.parentNode) {
+            overlay.parentNode.removeChild(overlay);
+        }
+    });
+
+    document.body.appendChild(overlay);
+}
+
+function openPromptModal(promptText) {
+    if (!promptText) return;
+
+    const overlay = document.createElement('div');
+    overlay.className = 'modal-overlay';
+
+    const dialog = document.createElement('div');
+    dialog.className = 'modal-prompt-dialog';
+
+    const closeBtn = document.createElement('button');
+    closeBtn.className = 'modal-close-btn';
+    closeBtn.type = 'button';
+    closeBtn.innerHTML = '<span>×</span>';
+    closeBtn.addEventListener('click', () => {
+        if (overlay.parentNode) overlay.parentNode.removeChild(overlay);
+    });
+
+    const title = document.createElement('div');
+    title.className = 'modal-prompt-title';
+    title.textContent = '生成提示词';
+
+    const body = document.createElement('div');
+    body.className = 'modal-prompt-body';
+    body.textContent = promptText;
+
+    dialog.appendChild(closeBtn);
+    dialog.appendChild(title);
+    dialog.appendChild(body);
+    overlay.appendChild(dialog);
+
+    overlay.addEventListener('click', (e) => {
+        if (e.target === overlay && overlay.parentNode) {
+            overlay.parentNode.removeChild(overlay);
+        }
+    });
+
+    document.body.appendChild(overlay);
+}
+
+function openPromptModalById(genId) {
+    const gen = imageGenerations.find(g => g.id === genId);
+    if (!gen) return;
+    openPromptModal(gen.prompt || '');
+}
+
+function downloadImageByIndex(genId, index) {
+    const gen = imageGenerations.find(g => g.id === genId);
+    if (!gen || !gen.images[index]) return;
+    downloadImageUrl(gen.images[index].url);
+}
+
+function sendToImg2Img(url, prompt) {
+    if (!url) return;
+    showSection('image');
+    switchImageMode('img2img');
+
+    const promptInput = document.getElementById('imagePrompt');
+    if (promptInput && prompt) {
+        promptInput.value = prompt;
+    }
+
+    const uploadInput = document.getElementById('refImgUpload');
+    if (uploadInput && uploadInput.parentElement) {
+        const uploadArea = uploadInput.parentElement;
+        uploadArea.style.backgroundImage = `url(${url})`;
+        uploadArea.style.backgroundSize = 'cover';
+        uploadArea.style.backgroundPosition = 'center';
+
+        const textElements = uploadArea.querySelectorAll('svg, span, p');
+        textElements.forEach(el => {
+            el.style.display = 'none';
+        });
+    }
+
+    showNotification('已发送到图生图参考图');
+}
+
+function sendToImg2ImgByIndex(genId, index) {
+    const gen = imageGenerations.find(g => g.id === genId);
+    if (!gen || !gen.images[index]) return;
+    sendToImg2Img(gen.images[index].url, gen.prompt);
+}
+
+function sendToVideoRef(url, prompt) {
+    showSection('video');
+    const promptInput = document.getElementById('videoPrompt');
+    if (promptInput && prompt) {
+        promptInput.value = prompt;
+    }
+    // 目前视频区域尚未有参考图上传位，先仅同步提示词
+    showNotification('已发送到视频创作提示词');
+}
+
+function sendToVideoRefByIndex(genId, index) {
+    const gen = imageGenerations.find(g => g.id === genId);
+    if (!gen || !gen.images[index]) return;
+    sendToVideoRef(gen.images[index].url, gen.prompt);
+}
+
+function addGenerationToGallery(genId) {
+    const gen = imageGenerations.find(g => g.id === genId);
+    if (!gen || !gen.images || !gen.images.length) return;
+    gen.images.forEach(img => {
+        if (img && img.url) {
+            addToGallery(img.url);
+        }
+    });
+    showNotification('已加入优质作品集');
 }
 
 function generateVideo() {
@@ -965,18 +1202,7 @@ function downloadImage() {
         return;
     }
 
-    try {
-        const link = document.createElement('a');
-        link.href = lastGeneratedImageUrl;
-        link.download = 'ai-image.png';
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-        showNotification('开始下载...');
-    } catch (e) {
-        console.error('下载图片出错:', e);
-        showNotification('下载失败，请右键图片另存为');
-    }
+    downloadImageUrl(lastGeneratedImageUrl);
 }
 
 function addToGallery(imageUrl) {
@@ -990,6 +1216,26 @@ function addToGallery(imageUrl) {
     item.style.backgroundPosition = 'center center';
 
     galleryGrid.prepend(item);
+}
+
+function downloadImageUrl(url) {
+    if (!url) {
+        showNotification('没有可下载的图片');
+        return;
+    }
+
+    try {
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = 'ai-image.png';
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        showNotification('开始下载...');
+    } catch (e) {
+        console.error('下载图片出错:', e);
+        showNotification('下载失败，请右键图片另存为');
+    }
 }
 
 function downloadVideo() {
